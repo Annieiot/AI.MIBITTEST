@@ -1,0 +1,940 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MBTI性格测试 - 电脑手机自适应版</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #4a6cf7;
+            --primary-light: #f0f5ff;
+            --secondary: #6c757d;
+            --light: #f8f9fa;
+            --dark: #343a40;
+            --border-radius: 12px;
+            --box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
+            --transition: all 0.3s ease;
+        }
+        
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #f5f7fa 0%, #e4e8f0 100%);
+            color: var(--dark);
+            line-height: 1.6;
+            min-height: 100vh;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .container {
+            display: flex;
+            width: 100%;
+            max-width: 1200px;
+            min-height: 90vh;
+            background: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            overflow: hidden;
+        }
+        
+        .sidebar {
+            width: 300px;
+            background: var(--primary);
+            color: white;
+            padding: 30px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .sidebar::before {
+            content: "";
+            position: absolute;
+            top: -50px;
+            right: -50px;
+            width: 200px;
+            height: 200px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.1);
+        }
+        
+        .sidebar::after {
+            content: "";
+            position: absolute;
+            bottom: -80px;
+            left: -80px;
+            width: 250px;
+            height: 250px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.1);
+        }
+        
+        .logo {
+            font-size: 28px;
+            font-weight: bold;
+            margin-bottom: 30px;
+            z-index: 1;
+        }
+        
+        .progress-container {
+            margin: 30px 0;
+            z-index: 1;
+        }
+        
+        .progress-info {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            font-size: 14px;
+        }
+        
+        .progress-bar {
+            height: 8px;
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: white;
+            border-radius: 4px;
+            width: 0%;
+            transition: var(--transition);
+        }
+        
+        .dimension {
+            margin-bottom: 15px;
+            z-index: 1;
+        }
+        
+        .dimension-title {
+            font-size: 14px;
+            margin-bottom: 5px;
+            display: flex;
+            justify-content: space-between;
+        }
+        
+        .dimension-bar {
+            height: 6px;
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 3px;
+            overflow: hidden;
+        }
+        
+        .dimension-fill {
+            height: 100%;
+            background: white;
+            border-radius: 3px;
+            width: 50%;
+        }
+        
+        .main-content {
+            flex: 1;
+            padding: 40px;
+            display: flex;
+            flex-direction: column;
+            overflow-y: auto;
+        }
+        
+        .section {
+            display: none;
+            flex: 1;
+        }
+        
+        .section.active {
+            display: flex;
+            flex-direction: column;
+            animation: fadeIn 0.5s ease;
+        }
+        
+        .welcome-title {
+            font-size: 32px;
+            color: var(--primary);
+            margin-bottom: 20px;
+        }
+        
+        .welcome-text {
+            margin-bottom: 25px;
+            color: var(--secondary);
+            line-height: 1.8;
+        }
+        
+        .features {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            margin: 30px 0;
+        }
+        
+        .feature {
+            flex: 1;
+            min-width: 200px;
+            padding: 20px;
+            background: var(--primary-light);
+            border-radius: var(--border-radius);
+            text-align: center;
+        }
+        
+        .feature i {
+            font-size: 32px;
+            color: var(--primary);
+            margin-bottom: 15px;
+        }
+        
+        .question-text {
+            font-size: 20px;
+            font-weight: 500;
+            margin-bottom: 30px;
+            line-height: 1.5;
+        }
+        
+        .options-container {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+        
+        .option {
+            padding: 20px;
+            border: 2px solid #eaeaea;
+            border-radius: var(--border-radius);
+            background: white;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+        }
+        
+        .option:hover {
+            border-color: var(--primary);
+            background: var(--primary-light);
+        }
+        
+        .option.selected {
+            border-color: var(--primary);
+            background: var(--primary-light);
+        }
+        
+        .option-letter {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: #eaeaea;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-right: 15px;
+            font-weight: bold;
+            transition: var(--transition);
+        }
+        
+        .option.selected .option-letter {
+            background: var(--primary);
+            color: white;
+        }
+        
+        .nav-buttons {
+            display: flex;
+            gap: 15px;
+            margin-top: auto;
+        }
+        
+        .btn {
+            padding: 15px 25px;
+            border: none;
+            border-radius: var(--border-radius);
+            background: var(--primary);
+            color: white;
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex: 1;
+        }
+        
+        .btn:hover {
+            background: #3b5be3;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(74, 108, 247, 0.25);
+        }
+        
+        .btn-secondary {
+            background: #f0f3ff;
+            color: var(--primary);
+        }
+        
+        .btn-secondary:hover {
+            background: #e0e7ff;
+            box-shadow: 0 4px 12px rgba(74, 108, 247, 0.15);
+        }
+        
+        .btn i {
+            margin-right: 8px;
+        }
+        
+        .result-type {
+            text-align: center;
+            font-size: 42px;
+            font-weight: bold;
+            color: var(--primary);
+            margin: 20px 0;
+            padding: 20px;
+            background: var(--primary-light);
+            border-radius: var(--border-radius);
+        }
+        
+        .result-description {
+            margin-bottom: 30px;
+            padding: 25px;
+            background: var(--light);
+            border-radius: var(--border-radius);
+            line-height: 1.8;
+        }
+        
+        .dimension-scores {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+            margin: 30px 0;
+        }
+        
+        .result-dimension {
+            padding: 20px;
+            background: white;
+            border-radius: var(--border-radius);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+        }
+        
+        .result-dimension-title {
+            font-weight: bold;
+            margin-bottom: 15px;
+            color: var(--primary);
+            display: flex;
+            justify-content: space-between;
+        }
+        
+        .result-dimension-bar {
+            height: 10px;
+            background: #eaeaea;
+            border-radius: 5px;
+            margin: 10px 0;
+            overflow: hidden;
+            position: relative;
+        }
+        
+        .result-dimension-fill {
+            height: 100%;
+            background: var(--primary);
+            border-radius: 5px;
+            width: 50%;
+            position: absolute;
+        }
+        
+        .result-dimension-labels {
+            display: flex;
+            justify-content: space-between;
+            font-size: 14px;
+            color: var(--secondary);
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        /* 响应式设计 */
+        @media (max-width: 992px) {
+            .container {
+                flex-direction: column;
+                max-width: 600px;
+            }
+            
+            .sidebar {
+                width: 100%;
+                padding: 20px;
+                min-height: 200px;
+            }
+            
+            .main-content {
+                padding: 30px;
+            }
+            
+            .dimension-scores {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        @media (max-width: 576px) {
+            body {
+                padding: 10px;
+            }
+            
+            .main-content {
+                padding: 20px;
+            }
+            
+            .welcome-title {
+                font-size: 28px;
+            }
+            
+            .question-text {
+                font-size: 18px;
+            }
+            
+            .feature {
+                min-width: 100%;
+            }
+            
+            .nav-buttons {
+                flex-direction: column;
+            }
+            
+            .result-type {
+                font-size: 32px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- 侧边栏 -->
+        <div class="sidebar">
+            <div class="logo">MBTI性格测试</div>
+            
+            <div class="progress-container">
+                <div class="progress-info">
+                    <span>测试进度</span>
+                    <span id="progress-percentage">0%</span>
+                </div>
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progress-bar"></div>
+                </div>
+            </div>
+            
+            <div class="dimension">
+                <div class="dimension-title">
+                    <span>E - I</span>
+                    <span id="ei-score">0-0</span>
+                </div>
+                <div class="dimension-bar">
+                    <div class="dimension-fill" id="ei-bar"></div>
+                </div>
+            </div>
+            
+            <div class="dimension">
+                <div class="dimension-title">
+                    <span>S - N</span>
+                    <span id="sn-score">0-0</span>
+                </div>
+                <div class="dimension-bar">
+                    <div class="dimension-fill" id="sn-bar"></div>
+                </div>
+            </div>
+            
+            <div class="dimension">
+                <div class="dimension-title">
+                    <span>T - F</span>
+                    <span id="tf-score">0-0</span>
+                </div>
+                <div class="dimension-bar">
+                    <div class="dimension-fill" id="tf-bar"></div>
+                </div>
+            </div>
+            
+            <div class="dimension">
+                <div class="dimension-title">
+                    <span>J - P</span>
+                    <span id="jp-score">0-0</span>
+                </div>
+                <div class="dimension-bar">
+                    <div class="dimension-fill" id="jp-bar"></div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 主内容区 -->
+        <div class="main-content">
+            <!-- 欢迎页 -->
+            <div id="welcome-section" class="section active">
+                <h1 class="welcome-title">探索你的性格类型</h1>
+                <p class="welcome-text">MBTI（Myers-Briggs Type Indicator）是一种迫选型、自我报告式的人格测评工具，用以衡量和描述人们在获取信息、作出决策、对待生活等方面的心理活动规律和不同的人格类型表现。</p>
+                
+                <div class="features">
+                    <div class="feature">
+                        <i class="fas fa-clock"></i>
+                        <h3>15-20分钟</h3>
+                        <p>完成80道题目</p>
+                    </div>
+                    <div class="feature">
+                        <i class="fas fa-chart-pie"></i>
+                        <h3>4个维度</h3>
+                        <p>分析你的性格偏好</p>
+                    </div>
+                    <div class="feature">
+                        <i class="fas fa-star"></i>
+                        <h3>16种类型</h3>
+                        <p>发现独特的自己</p>
+                    </div>
+                </div>
+                
+                <p class="welcome-text">请根据您的第一反应选择最符合您的选项，无需过度思考。答案没有对错之分，请诚实作答。</p>
+                
+                <div class="nav-buttons">
+                    <button id="start-btn" class="btn">
+                        <i class="fas fa-play"></i> 开始测试
+                    </button>
+                </div>
+            </div>
+            
+            <!-- 测试页面 -->
+            <div id="test-section" class="section">
+                <div class="question-text" id="question-text"></div>
+                
+                <div class="options-container" id="options-container">
+                    <!-- 选项将由JavaScript动态生成 -->
+                </div>
+                
+                <div class="nav-buttons">
+                    <button id="prev-btn" class="btn btn-secondary">
+                        <i class="fas fa-arrow-left"></i> 上一题
+                    </button>
+                    <button id="next-btn" class="btn">
+                        下一题 <i class="fas fa-arrow-right"></i>
+                    </button>
+                </div>
+            </div>
+            
+            <!-- 结果页面 -->
+            <div id="result-section" class="section">
+                <h1 class="welcome-title">你的性格类型是</h1>
+                
+                <div class="result-type" id="result-type">INFJ</div>
+                
+                <div class="result-description" id="result-description">
+                    INFJ类型的人倾向于富有洞察力和同情心，具有强烈的直觉和价值观。他们通常深思熟虑，关注他人的需求，并致力于实现自己的理想。INFJ是十六种人格类型中最稀有的类型之一，仅占人口的1-2%。
+                </div>
+                
+                <h2 class="welcome-title">维度详细分析</h2>
+                
+                <div class="dimension-scores">
+                    <div class="result-dimension">
+                        <div class="result-dimension-title">
+                            <span>外向 (E) - 内向 (I)</span>
+                            <span id="result-ei-score">20-80</span>
+                        </div>
+                        <div class="result-dimension-bar">
+                            <div class="result-dimension-fill" id="result-ei-bar" style="width: 20%; left: 0;"></div>
+                        </div>
+                        <div class="result-dimension-labels">
+                            <span>外向 (E)</span>
+                            <span>内向 (I)</span>
+                        </div>
+                    </div>
+                    
+                    <div class="result-dimension">
+                        <div class="result-dimension-title">
+                            <span>实感 (S) - 直觉 (N)</span>
+                            <span id="result-sn-score">30-70</span>
+                        </div>
+                        <div class="result-dimension-bar">
+                            <div class="result-dimension-fill" id="result-sn-bar" style="width: 70%; right: 0;"></div>
+                        </div>
+                        <div class="result-dimension-labels">
+                            <span>实感 (S)</span>
+                            <span>直觉 (N)</span>
+                        </div>
+                    </div>
+                    
+                    <div class="result-dimension">
+                        <div class="result-dimension-title">
+                            <span>思考 (T) - 情感 (F)</span>
+                            <span id="result-tf-score">40-60</span>
+                        </div>
+                        <div class="result-dimension-bar">
+                            <div class="result-dimension-fill" id="result-tf-bar" style="width: 60%; right: 0;"></div>
+                        </div>
+                        <div class="result-dimension-labels">
+                            <span>思考 (T)</span>
+                            <span>情感 (F)</span>
+                        </div>
+                    </div>
+                    
+                    <div class="result-dimension">
+                        <div class="result-dimension-title">
+                            <span>判断 (J) - 感知 (P)</span>
+                            <span id="result-jp-score">45-55</span>
+                        </div>
+                        <div class="result-dimension-bar">
+                            <div class="result-dimension-fill" id="result-jp-bar" style="width: 55%; right: 0;"></div>
+                        </div>
+                        <div class="result-dimension-labels">
+                            <span>判断 (J)</span>
+                            <span>感知 (P)</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="nav-buttons">
+                    <button id="restart-btn" class="btn">
+                        <i class="fas fa-redo"></i> 重新测试
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 测试数据 - 每个维度20道题，共80题
+        const questions = [
+            // E-I 维度题目 (20题)
+            { id: 1, dimension: 'EI', text: "在一周繁忙的工作后，你更倾向于用什么方式来充电？", optionA: "参加社交活动，与朋友相聚", optionB: "独自休息，比如看书、看电影" },
+            { id: 2, dimension: 'EI', text: "在社交聚会上，你通常更容易认识新朋友并主动开启对话吗？", optionA: "是的，我很自然就能做到", optionB: "不，我通常需要别人先开口" },
+            { id: 3, dimension: 'EI', text: "你更喜欢通过独自思考而不是与人讨论来理清思路吗？", optionA: "不，讨论更能帮助我思考", optionB: "是的，独自思考效率更高" },
+            { id: 4, dimension: 'EI', text: "当你有一个新想法时，你的第一反应是告诉别人，还是先自己琢磨？", optionA: "告诉别人，听取他们的意见", optionB: "先自己琢磨完善" },
+            { id: 5, dimension: 'EI', text: "在团队中，你更愿意扮演发言者还是倾听者的角色？", optionA: "发言者", optionB: "倾听者" },
+            { id: 6, dimension: 'EI', text: "你是否觉得长时间的独处会让你感到疲惫或不安？", optionA: "是的，我需要与人互动", optionB: "不会，我很享受独处时光" },
+            { id: 7, dimension: 'EI', text: "电话铃声响起时，你通常会感到兴奋还是觉得它是一种打扰？", optionA: "兴奋，可能是朋友或有趣的事", optionB: "打扰，我常常不想接电话" },
+            { id: 8, dimension: 'EI', text: "你更喜欢工作环境是开放、热闹的，还是安静、独立的？", optionA: "开放、热闹的环境", optionB: "安静、独立的空间" },
+            { id: 9, dimension: 'EI', text: "你认识的大多数人都了解你的个人生活和想法吗？", optionA: "是的，我乐于分享", optionB: "不，我只与少数人分享" },
+            { id: 10, dimension: 'EI', text: "当你需要做出重要决定时，你更依赖自己的内心判断，还是寻求他人的建议？", optionA: "寻求他人的建议", optionB: "自己的内心判断" },
+            { id: 11, dimension: 'EI', text: "在课堂上，你更享受小组讨论，还是个人研究和阅读？", optionA: "小组讨论", optionB: "个人研究和阅读" },
+            { id: 12, dimension: 'EI', text: "你通常拥有一个广泛的朋友圈，还是几个深交的挚友？", optionA: "广泛的朋友圈", optionB: "几个深交的挚友" },
+            { id: 13, dimension: 'EI', text: "参加完一个大型活动后，你通常是感到精力充沛还是精疲力尽？", optionA: "精力充沛", optionB: "精疲力尽" },
+            { id: 14, dimension: 'EI', text: "你更喜欢即时通讯（如微信文字）还是直接打电话/视频？", optionA: "打电话/视频", optionB: "即时文字通讯" },
+            { id: 15, dimension: 'EI', text: "你的兴趣爱好更多的是独自完成的（如读书、画画），还是与人一起完成的（如打球、聚会）？", optionA: "与人一起完成的", optionB: "独自完成的" },
+            { id: 16, dimension: 'EI', text: "在陌生人面前，你通常感到自然还是需要一些时间来热身？", optionA: "感到自然", optionB: "需要时间热身" },
+            { id: 17, dimension: 'EI', text: "你更愿意如何庆祝生日：举办一个大型派对，还是与一两个亲密朋友共进晚餐？", optionA: "大型派对", optionB: "与亲密朋友共进晚餐" },
+            { id: 18, dimension: 'EI', text: "你是否经常在说话的同时进行思考，而不是想好了再说？", optionA: "是的，边说边想", optionB: "不，通常想好了再说" },
+            { id: 19, dimension: 'EI', text: "当你感到压力大时，你更想找人倾诉，还是自己一个人静静？", optionA: "找人倾诉", optionB: "自己一个人静静" },
+            { id: 20, dimension: 'EI', text: "总体上，你认为自己是'对外部世界感兴趣'还是'对内心世界感兴趣'的人？", optionA: "对外部世界感兴趣", optionB: "对内心世界感兴趣" },
+            
+            // S-N 维度题目 (20题)
+            { id: 21, dimension: 'SN', text: "你更相信'亲眼所见'的具体事实，还是'灵光一现'的直觉判断？", optionA: "具体事实", optionB: "直觉判断" },
+            { id: 22, dimension: 'SN', text: "阅读时，你更关注作者描述的具体细节，还是故事背后的整体寓意？", optionA: "具体细节", optionB: "整体寓意" },
+            { id: 23, dimension: 'SN', text: "当你学习新东西时，你更喜欢动手操作，还是先理解其背后的理论？", optionA: "动手操作", optionB: "理解理论" },
+            { id: 24, dimension: 'SN', text: "你更擅长记忆具体的日期、名字和地点，还是概念、理论和模式？", optionA: "具体的日期、名字和地点", optionB: "概念、理论和模式" },
+            { id: 25, dimension: 'SN', text: "你更喜欢谈论当前的实际发生的事，还是未来的可能性和愿景？", optionA: "当前的实际发生的事", optionB: "未来的可能性和愿景" },
+            { id: 26, dimension: 'SN', text: "老板给你布置任务时，你更希望他给出明确的步骤，还是只告诉你最终目标？", optionA: "明确的步骤", optionB: "最终目标" },
+            { id: 27, dimension: 'SN', text: "你觉得自己更像一个'脚踏实地'的人，还是一个'充满想法'的人？", optionA: "脚踏实地", optionB: "充满想法" },
+            { id: 28, dimension: 'SN', text: "你更喜欢确切的、明确的说明，还是留有发挥空间的、开放性的指导？", optionA: "确切的、明确的说明", optionB: "开放性的指导" },
+            { id: 29, dimension: 'SN', text: "当你描述一次旅行时，你更倾向于描述看到的具体景色和声音，还是它带给你的感受和启发？", optionA: "具体景色和声音", optionB: "感受和启发" },
+            { id: 30, dimension: 'SN', text: "你更欣赏'实用主义'还是'创新精神'？", optionA: "实用主义", optionB: "创新精神" },
+            { id: 31, dimension: 'SN', text: "你更容易注意到环境的细节变化（如家具挪动了），还是环境带来的整体氛围感？", optionA: "细节变化", optionB: "整体氛围感" },
+            { id: 32, dimension: 'SN', text: "做计划时，你更关注具体的实施步骤，还是计划的最终目的和长远影响？", optionA: "具体实施步骤", optionB: "最终目的和长远影响" },
+            { id: 33, dimension: 'SN', text: "你更喜欢历史纪录片（基于事实）还是科幻电影（基于想象）？", optionA: "历史纪录片", optionB: "科幻电影" },
+            { id: 34, dimension: 'SN', text: "你认为'活在当下'和'展望未来'哪个更重要？", optionA: "活在当下", optionB: "展望未来" },
+            { id: 35, dimension: 'SN', text: "当你解决一个问题时，你更倾向于使用经过验证的可靠方法，还是尝试新的、可能更高效的方法？", optionA: "经过验证的可靠方法", optionB: "尝试新的方法" },
+            { id: 36, dimension: 'SN', text: "你更喜欢需要注重细节和精确度的工作，还是需要创意和构思的工作？", optionA: "注重细节和精确度", optionB: "创意和构思" },
+            { id: 37, dimension: 'SN', text: "别人会如何评价你：更'实际'还是更'有想法'？", optionA: "更实际", optionB: "更有想法" },
+            { id: 38, dimension: 'SN', text: "你更容易记住一个人的长相和穿着，还是他的性格和给你的感觉？", optionA: "长相和穿着", optionB: "性格和感觉" },
+            { id: 39, dimension: 'SN', text: "你更喜欢明确答案的问题，还是开放性的、可以有多种解释的问题？", optionA: "明确答案的问题", optionB: "开放性的问题" },
+            { id: 40, dimension: 'SN', text: "你更喜欢收藏有纪念意义的实物（如票根、照片），还是收藏经历带来的回忆和感受？", optionA: "收藏实物", optionB: "收藏回忆和感受" },
+            
+            // T-F 维度题目 (20题)
+            { id: 41, dimension: 'TF', text: "做决定时，确保决策的逻辑性比考虑人们的感受更重要吗？", optionA: "是的，逻辑性更重要", optionB: "不，需要考虑感受" },
+            { id: 42, dimension: 'TF', text: "你更愿意因为'正确'而受到赞扬，还是因为'体贴'而受到赞扬？", optionA: "因为正确", optionB: "因为体贴" },
+            { id: 43, dimension: 'TF', text: "当批评别人时，你更倾向于直截了当指出问题，还是委婉地照顾对方情绪？", optionA: "直截了当", optionB: "委婉照顾情绪" },
+            { id: 44, dimension: 'TF', text: "在辩论中，说服对方和维持和谐关系，你认为哪个更重要？", optionA: "说服对方", optionB: "维持和谐" },
+            { id: 45, dimension: 'TF', text: "你认为公平和公正应该优先于同情和体谅吗？", optionA: "是的，公平更重要", optionB: "不，同情也很重要" },
+            { id: 46, dimension: 'TF', text: "你更容易发现一个方案中的逻辑漏洞，还是它可能对人际关系造成的影响？", optionA: "逻辑漏洞", optionB: "人际关系影响" },
+            { id: 47, dimension: 'TF', text: "你更喜欢看科学分析类文章，还是人物故事和情感类文章？", optionA: "科学分析类", optionB: "人物故事和情感类" },
+            { id: 48, dimension: 'TF', text: "制定规则时，你认为'对事不对人'的原则可以贯彻始终吗？", optionA: "是的，应该对事不对人", optionB: "不，需要考虑人的因素" },
+            { id: 49, dimension: 'TF', text: "你更喜欢需要客观分析能力的任务，还是需要同理心和沟通技巧的任务？", optionA: "客观分析能力", optionB: "同理心和沟通技巧" },
+            { id: 50, dimension: 'TF', text: "当你买礼物时，你更看重礼物的实用性和性价比，还是它蕴含的情感和心意？", optionA: "实用性和性价比", optionB: "情感和心意" },
+            { id: 51, dimension: 'TF', text: "如果朋友做了一个你认为不明智的决定，你会直接告诉他你的看法吗？", optionA: "是的，直接告知", optionB: "不会，会委婉表达或保持沉默" },
+            { id: 52, dimension: 'TF', text: "在团队中，你更看重效率，还是更看重成员之间的和睦关系？", optionA: "效率", optionB: "和睦关系" },
+            { id: 53, dimension: 'TF', text: "你更容易被一个逻辑严谨的论证说服，还是被一个充满人情味的故事打动？", optionA: "逻辑严谨的论证", optionB: "充满人情味的故事" },
+            { id: 54, dimension: 'TF', text: "你认为'真理'和'和谐'哪个在人际交往中更优先？", optionA: "真理", optionB: "和谐" },
+            { id: 55, dimension: 'TF', text: "你评价一件事时，标准更多是'这合理吗？'，还是'这重要吗？'（对人或价值观而言）？", optionA: "这合理吗", optionB: "这重要吗" },
+            { id: 56, dimension: 'TF', text: "你更喜欢处理数据、机器或系统，还是处理与人相关的事务？", optionA: "数据、机器或系统", optionB: "与人相关的事务" },
+            { id: 57, dimension: 'TF', text: "当两个人发生冲突时，你更倾向于分析谁对谁错，还是想办法让双方和好？", optionA: "分析对错", optionB: "让双方和好" },
+            { id: 58, dimension: 'TF', text: "你觉得自己更擅长分析问题，还是理解他人？", optionA: "分析问题", optionB: "理解他人" },
+            { id: 59, dimension: 'TF', text: "你认为遵循自己的内心（价值观）和遵循自己的头脑（逻辑）哪个更自然？", optionA: "遵循头脑（逻辑）", optionB: "遵循内心（价值观）" },
+            { id: 60, dimension: 'TF', text: "别人会觉得你有时显得'不近人情'，还是'过于心软'？", optionA: "不近人情", optionB: "过于心软" },
+            
+            // J-P 维度题目 (20题)
+            { id: 61, dimension: 'JP', text: "你更喜欢事先制定详细的计划并按计划执行，还是享受随遇而安的灵活性？", optionA: "制定计划并按计划执行", optionB: "随遇而安的灵活性" },
+            { id: 62, dimension: 'JP', text: "在旅行前，你会提前很久就做好详细的行程安排吗？", optionA: "是的，会详细安排", optionB: "不会，大概有个想法就行" },
+            { id: 63, dimension: 'JP', text: "你觉得在截止日期的压力下工作状态更好，还是提前很久完成更让你安心？", optionA: "提前完成更安心", optionB: "截止日期前效率更高" },
+            { id: 64, dimension: 'JP', text: "你的工作空间通常是整洁有序的，还是随意堆放但你自己知道东西在哪？", optionA: "整洁有序", optionB: "随意堆放但我知道在哪" },
+            { id: 65, dimension: 'JP', text: "你更喜欢做出决定并了结一件事，还是保持选择开放性以便收集更多信息？", optionA: "做出决定并了结", optionB: "保持选择开放性" },
+            { id: 66, dimension: 'JP', text: "你更擅长开启一个新项目，还是收尾和完成一个项目？", optionA: "收尾和完成", optionB: "开启新项目" },
+            { id: 67, dimension: 'JP', text: "你通常准时赴约，还是经常'踩点'或稍晚一些？", optionA: "准时赴约", optionB: "经常踩点或稍晚" },
+            { id: 68, dimension: 'JP', text: "你觉得列任务清单并一项项完成很有成就感吗？", optionA: "是的，很有成就感", optionB: "不觉得，太约束了" },
+            { id: 69, dimension: 'JP', text: "你更喜欢生活有可预测性和规律，还是充满新奇和变化？", optionA: "可预测性和规律", optionB: "新奇和变化" },
+            { id: 70, dimension: 'JP', text: "当计划被打乱时，你通常会感到烦躁，还是轻松适应？", optionA: "感到烦躁", optionB: "轻松适应" },
+            { id: 71, dimension: 'JP', text: "你更愿意被视为一个'有条理、有决断'的人，还是一个'灵活、适应性强'的人？", optionA: "有条理、有决断", optionB: "灵活、适应性强" },
+            { id: 72, dimension: 'JP', text: "做作业或工作任务时，你喜欢早早开始慢慢做，还是等到最后期限前集中完成？", optionA: "早早开始慢慢做", optionB: "最后期限前集中完成" },
+            { id: 73, dimension: 'JP', text: "你更喜欢购买前就确定好要买什么，还是享受在商场里随意逛逛再决定？", optionA: "确定好再买", optionB: "随意逛逛再决定" },
+            { id: 74, dimension: 'JP', text: "你觉得自己更善于做计划，还是更善于处理突发情况？", optionA: "善于做计划", optionB: "善于处理突发情况" },
+            { id: 75, dimension: 'JP', text: "你认为'工作的时候认真工作，玩的时候尽情玩'是很好的原则吗？", optionA: "是的，很好的原则", optionB: "不，工作和玩可以融合" },
+            { id: 76, dimension: 'JP', text: "你的电脑桌面文件通常是分类整理好的，还是散乱各处但能用搜索找到？", optionA: "分类整理好", optionB: "散乱但能搜索找到" },
+            { id: 77, dimension: 'JP', text: "你更喜欢有明确规则和结构的游戏或活动，还是规则开放、可自由发挥的？", optionA: "明确规则和结构", optionB: "规则开放、自由发挥" },
+            { id: 78, dimension: 'JP', text: "你更经常是'名单和日程的制定者'，还是'随大流的人'？", optionA: "制定者", optionB: "随大流的人" },
+            { id: 79, dimension: 'JP', text: "你认为自己是一个做事果断、喜欢把事情定下来的人，还是一个喜欢探索各种可能性、不急于做决定的人？", optionA: "做事果断、喜欢定下来", optionB: "探索可能性、不急于决定" },
+            { id: 80, dimension: 'JP', text: "周末到来时，你通常已经想好了要做什么，还是等到周末再看心情决定？", optionA: "已经想好了", optionB: "看心情决定" }
+        ];
+
+        // 初始化变量
+        let currentQuestionIndex = 0;
+        const answers = {};
+        const scores = { E: 0, I: 0, S: 0, N: 0, T: 0, F: 0, J: 0, P: 0 };
+
+        // DOM元素
+        const welcomeSection = document.getElementById('welcome-section');
+        const testSection = document.getElementById('test-section');
+        const resultSection = document.getElementById('result-section');
+        const questionText = document.getElementById('question-text');
+        const optionsContainer = document.getElementById('options-container');
+        const progressBar = document.getElementById('progress-bar');
+        const progressPercentage = document.getElementById('progress-percentage');
+        const prevBtn = document.getElementById('prev-btn');
+        const nextBtn = document.getElementById('next-btn');
+        const startBtn = document.getElementById('start-btn');
+        const restartBtn = document.getElementById('restart-btn');
+
+        // 维度分数显示元素
+        const eiScoreElement = document.getElementById('ei-score');
+        const snScoreElement = document.getElementById('sn-score');
+        const tfScoreElement = document.getElementById('tf-score');
+        const jpScoreElement = document.getElementById('jp-score');
+        
+        // 维度进度条元素
+        const eiBarElement = document.getElementById('ei-bar');
+        const snBarElement = document.getElementById('sn-bar');
+        const tfBarElement = document.getElementById('tf-bar');
+        const jpBarElement = document.getElementById('jp-bar');
+
+        // 初始化测试
+        function initTest() {
+            showQuestion(0);
+            updateProgressBar();
+            updateDimensionBars();
+        }
+
+        // 显示问题
+        function showQuestion(index) {
+            const question = questions[index];
+            questionText.textContent = question.text;
+            
+            optionsContainer.innerHTML = '';
+            
+            const optionA = document.createElement('div');
+            optionA.className = 'option';
+            optionA.innerHTML = `
+                <div class="option-letter">A</div>
+                <div class="option-text">${question.optionA}</div>
+            `;
+            optionA.dataset.value = 'A';
+            optionA.addEventListener('click', () => selectOption('A', question.dimension));
+            
+            const optionB = document.createElement('div');
+            optionB.className = 'option';
+            optionB.innerHTML = `
+                <div class="option-letter">B</div>
+                <div class="option-text">${question.optionB}</div>
+            `;
+            optionB.dataset.value = 'B';
+            optionB.addEventListener('click', () => selectOption('B', question.dimension));
+            
+            optionsContainer.appendChild(optionA);
+            optionsContainer.appendChild(optionB);
+            
+            // 如果已回答过此题，显示已选答案
+            if (answers[index] !== undefined) {
+                const selectedOption = optionsContainer.querySelector(`[data-value="${answers[index]}"]`);
+                if (selectedOption) {
+                    selectedOption.classList.add('selected');
+                }
+            }
+            
+            // 更新按钮状态
+            prevBtn.disabled = index === 0;
+            nextBtn.textContent = index === questions.length - 1 ? '查看结果' : '下一题';
+        }
+
+        // 选择选项
+        function selectOption(value, dimension) {
+            // 移除之前的选择
+            const options = optionsContainer.querySelectorAll('.option');
+            options.forEach(option => option.classList.remove('selected'));
+            
+            // 标记当前选择
+            const selectedOption = optionsContainer.querySelector(`[data-value="${value}"]`);
+            selectedOption.classList.add('selected');
+            
+            // 保存答案
+            answers[currentQuestionIndex] = value;
+            
+            // 更新分数
+            if (value === 'A') {
+                scores[dimension[0]]++;
+            } else {
+                scores[dimension[1]]++;
+            }
+            
+            // 更新维度条
+            updateDimensionBars();
+            
+            // 自动前进到下一题（最后一题除外）
+            if (currentQuestionIndex < questions.length - 1) {
+                setTimeout(() => {
+                    nextQuestion();
+                }, 300);
+            }
+        }
+
+        // 下一题
+        function nextQuestion() {
+            if (currentQuestionIndex < questions.length - 1) {
+                currentQuestionIndex++;
+                showQuestion(currentQuestionIndex);
+                updateProgressBar();
+            } else {
+                // 最后一题，计算结果显示结果
+                calculateResult();
+                showResult();
+            }
+        }
+
+        // 上一题
+        function prevQuestion() {
+            if (currentQuestionIndex > 0) {
+                currentQuestionIndex--;
+                showQuestion(currentQuestionIndex);
+                updateProgressBar();
+            }
+        }
+
+        // 更新进度条
+        function updateProgressBar() {
+            const progress = ((currentQuestionIndex + 1) / questions.length) * 100;
+            progressBar.style.width = `${progress}%`;
+            progressPercentage.textContent = `${Math.round(progress)}%`;
+        }
+
+        // 更新维度进度条
+        function updateDimensionBars() {
+            // 更新分数显示
+            eiScoreElement.textContent = `${scores.E}-${scores.I}`;
+            snScoreElement.textContent = `${scores.S}-${scores.N}`;
+            tfScoreElement.textContent = `${scores.T}-${scores.F}`;
+            jpScoreElement.textContent = `${scores.J}-${scores.P}`;
+            
+            // 更新进度条
+            const eiTotal = scores.E + scores.I;
+            const snTotal = scores.S + scores.N;
+            const tfTotal = scores.T + scores.F;
+            const jpTotal = scores.J + scores.P;
+            
+            eiBarElement.style.width = eiTotal > 0 ? `${(scores.E / eiTotal) * 100}%` : '50%';
+            snBarElement.style.width = snTotal > 0 ? `${(scores.S / snTotal) * 100}%` : '50%';
+            tfBarElement.style.width = tfTotal > 0 ? `${(scores.T / tfTotal) * 100}%` : '50%';
+            jpBarElement.style.width = jpTotal > 0 ? `${(scores.J / jpTotal) * 100}%` : '50%';
+        }
+
+        // 计算结果
+        function calculateResult() {
+            // 确定每个维度的倾向
+            const eiType = scores.E > scores.I ? 'E' : 'I';
+            const snType = scores.S > scores.N ? 'S' : 'N';
+            const tfType = scores.T > scores.F ? 'T' : 'F';
+            const jpType = scores.J > scores.P ? 'J' : 'P';
+            
+            // 最终类型
+            return eiType + snType + tfType + jpType;
+        }
+
+        // 显示结果
+        function showResult() {
+            const resultType = calculateResult();
+            document.getElementById('result-type').textContent = resultType;
+            
+            // 设置维度值和进度条
+            const eiTotal = scores.E + scores.I;
+            const snTotal = scores.S + scores.N;
+            const tfTotal = scores.T + scores.F;
+            const jpTotal = scores.J + scores.P;
+            
+            document.getElementById('result-ei-score').textContent = `${scores.E}-${scores.I}`;
+            document.getElementById('result-sn-score').textContent = `${scores.S}-${scores.N}`;
+            document.getElementById('result-tf-score').textContent = `${scores.T}-${scores.F}`;
+            document.getElementById('result-jp-score').textContent = `${scores.J}-${scores.P}`;
+            
+            // 设置进度条填充
+            document.getElementById('result-ei-bar').style.width = eiTotal > 0 ? `${(scores.E / eiTotal) * 100}%` : '50%';
+            document.getElementById('result-sn-bar').style.width = snTotal > 0 ? `${(scores.S / snTotal) * 100}%` : '50%';
+            document.getElementById('result-tf-bar').style.width = tfTotal > 0 ? `${(scores.T / tfTotal) * 100}%` : '50%';
+            document.getElementById('result-jp-bar').style.width = jpTotal > 0 ? `${(scores.J / jpTotal) * 100}%` : '50%';
+            
+            // 设置类型描述
+            const typeDescriptions = {
+                'INTJ': '富有想象力和战略能力的策略家，一切皆在计划之中。INTJ类型的人聪明且有动力，能够看到可能性的全景，并制定计划来实现他们的愿景。',
+                'INTP': '具有创造力的发明家，对知识有着止不住的渴望。INTP是创新的思想家，对知识有着强烈的渴望，喜欢逻辑分析和抽象概念。',
+                'ENTJ': '大胆、富有想象力且意志强大的领导者，总能找到或创造解决方法。ENTJ是天生的领导者，能够快速发现低效性并制定改进系统。',
+                'ENTP': '聪明好奇的思想者，不会放弃任何智力上的挑战。ENTP聪明、好奇且思想敏捷，喜欢头脑风暴和挑战现状。',
+                'INFJ': '安静而神秘，同时鼓舞人心且不知疲倦的理想主义者。INFJ具有深刻的洞察力，关心他人的需求，并致力于实现自己的理想。',
+                'INFP': '诗意、善良的利他主义者，总是热情地帮助正当事业。INFP是理想主义者，具有强烈的个人价值观，并希望世界变得更好。',
+                'ENFJ': '富有魅力且鼓舞人心的领导者，有使听众着迷的能力。ENFJ是 charismatic 的领导者，能够洞察他人的情感和动机。',
+                'ENFP': '热情、有创造力爱社交的自由人，总能找到理由微笑。ENFP热情、创造力和社交能力强，喜欢探索新的想法和可能性。',
+                'ISTJ': '实际且注重事实的个人，可靠性不容怀疑。ISTJ务实、有责任感，注重细节并尊重事实和经验。',
+                'ISFJ': '非常专注而温暖的守护者，时刻保护着所爱之人。ISFJ保护性强、尽职尽责，关心他人的实际需求。',
+                'ESTJ': '出色的管理者，在管理具体事务和人员方面无与伦比。ESTJ是传统和秩序的代表，善于组织和管理。',
+                'ESFJ': '极有同情心，爱交往、受欢迎的主人，总是热心提供帮助。ESFJ关心他人、善于合作，喜欢帮助他人并创造和谐的环境。',
+                'ISTP': '大胆而实际的实验家，擅长使用任何形式的工具。ISTP灵活且实用，喜欢动手解决问题。',
+                'ISFP': '灵活而有魅力的艺术家，随时准备探索和体验新鲜事物。ISFP安静、随和且敏感，享受当下的美好时刻。',
+                'ESTP': '聪明、精力充沛且敏锐的感知者，享受冒险的生活。ESTP精力充沛、行动导向，喜欢冒险和即时结果。',
+                'ESFP': '自发性强的表演者，热爱聚光灯，让生活处处有惊喜。ESFP活泼、爱玩且热情，喜欢成为关注的中心。'
+            };
+            
+            document.getElementById('result-description').textContent = 
+                typeDescriptions[resultType] || '您是一个独特的人，具有丰富的性格特点。';
+            
+            // 切换到结果页
+            testSection.classList.remove('active');
+            resultSection.classList.add('active');
+        }
+
+        // 事件监听
+        startBtn.addEventListener('click', () => {
+            welcomeSection.classList.remove('active');
+            testSection.classList.add('active');
+            initTest();
+        });
+
+        restartBtn.addEventListener('click', () => {
+            // 重置测试
+            currentQuestionIndex = 0;
+            for (let key in answers) {
+                delete answers[key];
+            }
+            for (let key in scores) {
+                scores[key] = 0;
+            }
+            
+            resultSection.classList.remove('active');
+            testSection.classList.add('active');
+            initTest();
+        });
+
+        nextBtn.addEventListener('click', nextQuestion);
+        prevBtn.addEventListener('click', prevQuestion);
+    </script>
+</body>
+</html>
